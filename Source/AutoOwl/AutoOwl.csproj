@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>false</DebugSymbols>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IntermediateOutputPath>C:\Users\Daniel\AppData\Local\Temp\vsA3DF.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\oferd\AppData\Local\Temp\vs3FE5.tmp\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
