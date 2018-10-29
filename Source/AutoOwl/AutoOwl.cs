@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
 using RimWorld;
@@ -12,42 +11,71 @@ namespace AutoOwl
 	{
 		private static readonly TraitDef NightOwl = DefDatabase<TraitDef>.GetNamed("NightOwl");
 
-		private static void GenerateNightOwlSchedule(Pawn pawn)
+		private static readonly Queue<Pawn> PawnsToCheck = new Queue<Pawn>();
+
+		private static void AdjustForNightOwlSchedule(Pawn pawn)
 		{
-			if (pawn.story?.traits?.HasTrait(NightOwl) ?? false && pawn.timetable != null)
+			if (pawn?.IsFreeColonist ?? false)
 			{
-				pawn.timetable.times = new List<TimeAssignmentDef>(GenDate.HoursPerDay);
-
-				for (int i = 0; i < GenDate.HoursPerDay; i++)
+				if ((pawn.story?.traits?.HasTrait(NightOwl) ?? false) && pawn.timetable != null)
 				{
-					TimeAssignmentDef assignment;
+					pawn.timetable.times = new List<TimeAssignmentDef>(GenDate.HoursPerDay);
 
-					if (i >= 11 && i <= 18)
+					for (int i = 0; i < GenDate.HoursPerDay; i++)
 					{
-						assignment = TimeAssignmentDefOf.Sleep;
-					}
+						TimeAssignmentDef assignment;
 
-					else
-					{
-						assignment = TimeAssignmentDefOf.Anything;
-					}
+						if (i >= 11 && i <= 18)
+						{
+							assignment = TimeAssignmentDefOf.Sleep;
+						}
 
-					pawn.timetable.times.Add(assignment);
+						else
+						{
+							assignment = TimeAssignmentDefOf.Anything;
+						}
+
+						pawn.timetable.times.Add(assignment);
+					}
 				}
 			}
 		}
 
-		// Modifies pawns after they've been generated
-		[HarmonyPatch(typeof(PawnGenerator))]
-		[HarmonyPatch("GeneratePawn")]
-		[HarmonyPatch(new Type[] { typeof(PawnGenerationRequest) })]
+		[HarmonyPatch(typeof(Pawn))]
+		[HarmonyPatch(nameof(Pawn.SetFaction))]
+		public static class Patch_Pawn
+		{
+			public static void Postfix(Pawn __instance, Faction newFaction)
+			{
+				if (newFaction == Faction.OfPlayer)
+				{
+					PawnsToCheck.Enqueue(__instance);
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(Thing))]
+		[HarmonyPatch(nameof(Thing.SetFactionDirect))]
 		public static class Patch_PawnGenerator
 		{
-			public static void Postfix(Pawn __result)
+			public static void Postfix(Thing __instance, Faction newFaction)
 			{
-				if (__result != null)
+				if (__instance is Pawn pawn && newFaction == Faction.OfPlayer)
 				{
-					GenerateNightOwlSchedule(__result);
+					PawnsToCheck.Enqueue(pawn);
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(GameComponentUtility))]
+		[HarmonyPatch(nameof(GameComponentUtility.GameComponentUpdate))]
+		public static class Patch_GameComponentUtility
+		{
+			public static void Postfix()
+			{
+				if (PawnsToCheck.Count > 0)
+				{
+					AdjustForNightOwlSchedule(PawnsToCheck.Dequeue());
 				}
 			}
 		}
