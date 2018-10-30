@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
 using RimWorld;
@@ -41,26 +42,14 @@ namespace AutoOwl
 			}
 		}
 
-		[HarmonyPatch(typeof(Pawn))]
-		[HarmonyPatch(nameof(Pawn.SetFaction))]
-		public static class Patch_Pawn
+		[HarmonyPatch(typeof(Pawn_TimetableTracker))]
+		[HarmonyPatch(new Type[] { typeof(Pawn) })]
+		[HarmonyPatch(MethodType.Constructor)]
+		public static class Patch_Pawn_TimetableTracker
 		{
-			public static void Postfix(Pawn __instance, Faction newFaction)
+			public static void Postfix(Pawn pawn)
 			{
-				if (newFaction == Faction.OfPlayerSilentFail)
-				{
-					PawnsToCheck.Enqueue(__instance);
-				}
-			}
-		}
-
-		[HarmonyPatch(typeof(Thing))]
-		[HarmonyPatch(nameof(Thing.SetFactionDirect))]
-		public static class Patch_PawnGenerator
-		{
-			public static void Postfix(Thing __instance, Faction newFaction)
-			{
-				if (__instance is Pawn pawn && newFaction == Faction.OfPlayerSilentFail)
+				if (Scribe.mode != LoadSaveMode.LoadingVars)
 				{
 					PawnsToCheck.Enqueue(pawn);
 				}
@@ -71,6 +60,7 @@ namespace AutoOwl
 		[HarmonyPatch(nameof(GameComponentUtility.GameComponentUpdate))]
 		public static class Patch_GameComponentUtility
 		{
+			// Should only trigger once per pawn, one pawn per frame
 			public static void Postfix()
 			{
 				if (PawnsToCheck.Count > 0)
