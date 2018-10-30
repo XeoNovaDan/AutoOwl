@@ -47,7 +47,7 @@ namespace AutoOwl
 		{
 			public static void Postfix(Pawn __instance, Faction newFaction)
 			{
-				if (newFaction == Faction.OfPlayer)
+				if (Current.ProgramState == ProgramState.Playing && newFaction == Faction.OfPlayer)
 				{
 					PawnsToCheck.Enqueue(__instance);
 				}
@@ -60,7 +60,7 @@ namespace AutoOwl
 		{
 			public static void Postfix(Thing __instance, Faction newFaction)
 			{
-				if (__instance is Pawn pawn && newFaction == Faction.OfPlayer)
+				if (Current.ProgramState == ProgramState.Playing && __instance is Pawn pawn && newFaction == Faction.OfPlayer)
 				{
 					PawnsToCheck.Enqueue(pawn);
 				}
