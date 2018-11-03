@@ -3,7 +3,7 @@
 	<name>[XND] AutoOwl</name>
 	<author>XeoNovaDan &amp; Dazz Aephiex (original author)</author>
 	<targetVersion>1.0.2059</targetVersion>
-	<description>This mod makes it so that colonists with the trait Night Owl will have an alternative initial schedule to avoid working during the day and suffering -10 mood as a result.
+	<description>This mod makes it so that colonists and prisoners with the Night Owl trait will have an alternative initial schedule to avoid working during the day and suffering -10 mood as a result.
 
 Regular Colonists: sleep at 0-5 and 22-23
 
@@ -13,6 +13,5 @@ This mod only changes the initial schedule upon pawn generation; existing Night 
 
 Incompatibility: None
 Old Save Compatible: Yes
-Safely Removable: Yes
-</description>
+Safely Removable: Yes</description>
 </ModMetaData>
