@@ -16,7 +16,7 @@ namespace AutoOwl
 
 		private static void AdjustForNightOwlSchedule(Pawn pawn)
 		{
-			if (pawn?.IsFreeColonist ?? false)
+			if (pawn != null && (pawn.IsFreeColonist || pawn.IsPrisonerOfColony))
 			{
 				if ((pawn.story?.traits?.HasTrait(NightOwl) ?? false) && pawn.timetable != null)
 				{
