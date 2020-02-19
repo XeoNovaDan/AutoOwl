@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 
@@ -72,7 +72,7 @@ namespace AutoOwl
 
 		static HarmonyPatches()
 		{
-			HarmonyInstance harmony = HarmonyInstance.Create("XeoNovaDan.AutoOwl");
+			var harmony = new Harmony("XeoNovaDan.AutoOwl");
 
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 		}
